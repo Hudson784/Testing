@@ -15,8 +15,6 @@ def index():
 for line in tweets_file:
     tweet = json.loads(line)
     test = tweet['id']
-    test.append(tweet['text'])
-    test.append( user['name']))
     print("First line of data: \n")
     print("Tweet ID: ", tweet['id'])
     print("Tweet: ", tweet['text'])
