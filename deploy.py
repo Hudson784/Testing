@@ -1,9 +1,6 @@
 from flask import Flask 
 import json
 #Import the necessary methods from tweepy library
-from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
-from tweepy import Stream
 
 app = Flask(__name__)
 
