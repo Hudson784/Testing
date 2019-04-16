@@ -6,10 +6,10 @@ from flask import render_template
 app = Flask(__name__)
 
 @app.route('/')
-def index(): 
+def index():
     tweets_data = []
     tweets_data_path = 'twitter_data.txt.'
-    tweets_file = open(tweets_data_path, "r")
+    tweets_file = open(tweets_data_path, "r"
     for line in tweets_file:
         tweet = line
         tweets_data.append(tweet)
