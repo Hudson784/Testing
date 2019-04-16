@@ -21,6 +21,6 @@ def index():
         print("Tweet: ", tweet['text'])
         user = tweet['user']
         print("Name: ", user['name'])
-        print("Screen Name: ", user['screen_name']
+        print("Screen Name: ", user['screen_name'])
         tweets_data.append(tweet)
-    return jsonify(test)
+    return jsonify(tweets_data)
