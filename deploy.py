@@ -11,6 +11,6 @@ def index():
     tweets_data_path = 'twitter_data.txt.'
     tweets_file = open(tweets_data_path, "r")
     for line in tweets_file:
-        tweet = line
+        tweet = json.loads(line)
         tweets_data.append(tweet)
     return render_template('home.html', records = tweets_data)
