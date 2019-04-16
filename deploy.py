@@ -11,7 +11,7 @@ def index():
     tweets_data_path = 'twitter_data.txt.'
     tweets_file = open(tweets_data_path, "r")
     for line in tweets_file:
-        tweet = json.loads(line)
+        tweet = line
         test = tweet['id']
         print("First line of data: \n")
         print("Tweet ID: ", tweet['id'])
