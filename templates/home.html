@@ -10,8 +10,8 @@
     <p> [IN DEVELOPMENT] Currently being developed by Hudson, Maya, Chantel, K'mani and Tony </p>
     <p> You would have to create an account or login in order to proceed.
         Choose either of the options listed below: </p>
-    {% if records %} 
-    <p> records.id </p> 
-    {%endif%}
+    {% for rec in records %} 
+    <p> rec.id </p> 
+    {%endfor%}
     </body>
 </html>   
