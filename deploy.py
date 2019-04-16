@@ -20,4 +20,4 @@ def index():
         print("Name: ", user['name'])
         print("Screen Name: ", user['screen_name'])
         tweets_data.append(tweet)
-    return jsonify(tweets_data)
+    return tweets_data
