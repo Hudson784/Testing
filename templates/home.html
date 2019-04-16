@@ -11,10 +11,13 @@
     <p> You would have to create an account or login in order to proceed.
         Choose either of the options listed below: </p>
     {% for rec in records %} 
-    <p> records[0] </p>
-    <p> records[rec] </p>
-    <p> rec </p>  
-    <p> rec[0] </p>
+    <p> records.id </p>
+    <p> records[0'id'] </p>
+    <p> records[rec'id'] </p>
+    <p> rec['id'] </p>  
+    <p> rec[0'id'] </p>
+    <p> rec.id </p>
+    <p> rec.['id']</p>
     {%endfor%}
     </body>
 </html>   
