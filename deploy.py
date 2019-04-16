@@ -12,12 +12,5 @@ def index():
     tweets_file = open(tweets_data_path, "r")
     for line in tweets_file:
         tweet = line
-        test = tweet['id']
-        print("First line of data: \n")
-        print("Tweet ID: ", tweet['id'])
-        print("Tweet: ", tweet['text'])
-        user = tweet['user']
-        print("Name: ", user['name'])
-        print("Screen Name: ", user['screen_name'])
         tweets_data.append(tweet)
     return tweets_data
