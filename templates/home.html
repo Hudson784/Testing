@@ -11,7 +11,10 @@
     <p> You would have to create an account or login in order to proceed.
         Choose either of the options listed below: </p>
     {% for rec in records %} 
-    <p> rec.id </p> 
+    <p> records[0] </p>
+    <p> records[rec] </p>
+    <p> rec </p>  
+    <p> rec[0] </p>
     {%endfor%}
     </body>
 </html>   
