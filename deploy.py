@@ -13,4 +13,4 @@ def index():
     for line in tweets_file:
         tweet = line
         tweets_data.append(tweet)
-    return render_template('home.html')
+    return render_template('home.html', records = tweets_data)
