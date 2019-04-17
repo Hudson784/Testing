@@ -11,13 +11,21 @@
     <p> You would have to create an account or login in order to proceed.
         Choose either of the options listed below: </p>
     {% for rec in records %} 
-    <p> records.id </p>
-    <p> records[0'id'] </p>
-    <p> records[rec'id'] </p>
-    <p> rec['id'] </p>  
-    <p> rec[0'id'] </p>
-    <p> rec.id </p>
-    <p> rec.['id']</p>
+    <p> {{rec.id}} </p>
+    <p> {{rec.created_at}} </p>
+    <p> {{rec.id_str}} </p>
+    <p> {{rec.text}} </p>
+
+    <p> {{rec.user['id']}} </p>
+    <p> {{rec.user['id_str']}} </p>
+    <p> {{rec.user['name']}} </p>
+    <p> {{rec.user['screen_name']}} </p>
+    <p> {{rec.user['followers_count']}} </p>
+    <p> {{rec.user['friends_count']}} </p>
+    <p> {{rec.user['favourites_count']}} </p>
+    <p> {{rec.user['statuses_count']}} </p>
+
+    
     {%endfor%}
     </body>
 </html>   
