@@ -20,16 +20,75 @@ DATABASE = 'pPEd17bA5B'
 
 app = Flask(__name__)
 
-@app.route('/deletetweets', methods=['POST'])
-def delete_tweets(): 
+def authenticate(username, password):
+    db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Users")
+    data = cursor.fetchall()
+    for user in data:
+        if user[1] == username and user[2] == password:
+            return True
+    return False 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login(): 
+    if request.method == 'POST':
+        return redirect(url_for('verify_user'))
+    else:
+        return render_template("login.html")
+
+#This app routes verifies the user attempting to login
+@app.route('/verify_user', methods=['GET', 'POST'])
+def verify_user( ): 
+    if request.method == 'POST':
+        username = request.form["login_username"]
+        password = request.form["login_password"]
+        if authenticate(username, password): 
+            db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
+            cursor = db.cursor()
+            query = "SELECT * FROM " + username
+            cursor.execute(query)
+            userdata = cursor.fetchall() 
+            return render_template("timeline.html", records = userdata) 
+    else:
+        return render_template("login.html")
+
+#This app route creates a user or fetches the create user login page
+@app.route('/create_user', methods=['GET', 'POST'])
+def create_user(): 
+    if request.method == 'POST':
+        username = request.form["create_username"]
+        password = request.form["create_password"]
+        email = request.form["create_email_address"]
+        db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
+        cursor = db.cursor()
+        query = "CREATE TABLE IF NOT EXISTS " + username + " (id int(11) NOT NULL AUTO_INCREMENT, name varchar(45), password varchar(45), tweet varchar(150), PRIMARY KEY (id));"
+        cursor.execute(query)
+        query = "INSERT INTO Users (username, password, email) VALUES (%s, %s, %s)"
+        cursor.execute(query,(username, password, email))
+        query = "SELECT * from " +username
+        cursor.execute(query)
+        userdata = cursor.fetchall()
+        cursor.close()
+        db.commit()
+        db.close()
+        return render_template("timeline.html", records = userdata)
+    else:
+        return render_template("login.html")
+
+#This app route deletes the entire timeline's database 
+@app.route('/deletetimeline', methods=['POST'])
+def delete_timeline(): 
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
     cursor = db.cursor()
     cursor.execute("TRUNCATE TABLE twitter")
     data = cursor.fetchall() 
     cursor.close()
     db.close()
-    return render_template("homenew.html", records = data, status = True)
+    return render_template("timeline.html", records = data, status = True)
 
+#This app route takes the tweet the user enterred and adds it to the timeline 
+#This route stores to both the user's database and the timeline database  
 @app.route("/createtweet", methods=['POST'])
 def create_tweet(): 
     screen_name = request.form['screen_name']
@@ -43,10 +102,12 @@ def create_tweet():
     cursor.close()
     db.commit()
     db.close()
-    return render_template("homenew.html", records = data)
+    return render_template("timeline.html", records = data)
 
+#This app route takes the information enterred by the user and then pulls from the twitter api 
+#Tracks the tweets specified by the user
 @app.route('/searchtweets', methods=['GET', 'POST'])
-def searchUserTweets(): 
+def search_tweets_for_user(): 
     if request.method == 'POST': 
         criteria = request.form['criteria']
         banned = ['sex', 'porn', 'pussy', 'vagina', 'bitch', 'sexy', 'slut']
@@ -54,8 +115,9 @@ def searchUserTweets():
             streamUserRequest(criteria, 'school')
             return redirect(url_for('load_user_table'))
     else: 
-          return redirect(url_for('form'))
+          return redirect(url_for('timeline'))
 
+#This app route is responsible for loading the user tweets from the database
 @app.route('/loadusertweets', methods= ['GET', 'POST'])
 def load_user_table():
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
@@ -64,15 +126,16 @@ def load_user_table():
     data = cursor.fetchall() 
     cursor.close()
     db.close()
-    return render_template("homenew.html", records = data)
+    return render_template("timeline.html", records = data)
 
+#This app route is responsible for loading more tweets to the timeline
 @app.route('/loadtimeline', methods=['GET'])
 def getTweets():
     stream()
-    return redirect(url_for('form'))
+    return redirect(url_for('timeline'))
 
 @app.route('/', methods=['GET'])
-def form():
+def timeline():
     stream()
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
     cursor = db.cursor()
@@ -80,7 +143,7 @@ def form():
     data = cursor.fetchall() 
     cursor.close()
     db.close()
-    return render_template("homenew.html", records = data)
+    return render_template("timeline.html", records = data)
 
 @app.route('/search_database', methods=['GET', 'POST'])
 def search_database_for_tweets(): 
@@ -94,7 +157,7 @@ def search_database_for_tweets():
             data = cursor.fetchall() 
             cursor.close()
             db.close() 
-            return render_template("tweets.html", records = data)
+            return render_template("user_tweets.html", records = data)
         else:
             db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
             cursor = db.cursor()
@@ -103,6 +166,6 @@ def search_database_for_tweets():
             data = list(reversed(data))
             cursor.close()
             db.close()
-            return render_template("homenew.html", records = data, error = True)
+            return render_template("timeline.html", records = data, error = True)
     else:
-        return redirect(url_for('form'))
+        return redirect(url_for('timeline'))
