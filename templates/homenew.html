@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title> Chirp [IN DEVELOPMENT]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <style> 
+    html,body{background-color:#212529;}
+    </style> 
+</head>
+<body>
+    {% if error  %}
+    <h1  color="white"> That word is not allowed </h1>
+    {%endif%} 
+    {%if criteria%}
+    <h1  color="white"> Searched results for {{criteria }} </h1>
+    {% endif %}
+    <form method="POST" action="/search_database"> 
+        <div class="form-group">
+            <label for="exampleInputEmail1">Enter criteria </label>
+            <input type ="text" name= "criteria" /> <br>
+            <small id="emailHelp" class="form-text text-muted"> Help us filter tweets to your liking </small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <form method="GET" action="/loadtimeline"> 
+    <button type="submit" class="btn btn-primary">Refresh</button>
+    </form>
+    <form method="POST" action="/deletetweets">
+        <button type="submit" class="btn btn-primary">Clear</button>
+    </form>
+    {%if status %}
+        <h1 color="white"> Records deleted </h1>
+    {%endif%}
+    </form>
+    <form method="POST" action="/createtweet"> 
+    Enter your screen name <input type ="text" name= "screen_name" />
+    Enter your tweet <input type ="text" name= "tweet" />
+    <button type="submit" class="btn btn-primary">Create Tweet</button>
+    </form>
+    <table class="table table-dark">
+    <thead class="thead-dark">
+        <tr>
+        <th> IMG </th>
+        <th> Screen Name </th>
+        <th> Tweeted </th>
+        <th> Created at </th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for rec in records %} 
+    <tr>
+        <td><img src="{{rec[5]}}" alt="PUSA-Icon"> </td>
+        <td>{{rec[2]}}</td> 
+        <td>{{rec[4]}}</td>
+        <td>{{rec[3]}}</td>
+    </tr>
+    {%endfor%}
+    </tbody>
+    </table>
+</body>
+</html>
