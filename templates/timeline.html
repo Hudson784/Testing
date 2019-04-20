@@ -9,18 +9,19 @@
     {% endif %}
     <div>
     <form method="POST" action="/search_database"> 
-        <div class="form-group">
             <label for="exampleInputEmail1">Filter your timeline</label>
             <input type ="text" name= "criteria" /> <br>
             <small id="emailHelp" class="form-text text-muted"> Filter your timeline by tweet</small>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <form method="GET" action="/loadtimeline"> 
-        <label for="exampleInputEmail1">Refresh your timeline</label>
-        <button type="submit" class="btn btn-primary">Refresh</button>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Refresh your timeline</label>
+          <button type="submit" class="btn btn-primary">Refresh</button>
+        </div>
     </form>
-    <form method="POST" action="/deletetweets">
+    <form method="POST" action="/deletetimeline">
         <label for="exampleInputEmail1">Delete(Clear) your timeline</label>
         <button type="submit" class="btn btn-primary">Clear</button>
     </form>
@@ -28,12 +29,17 @@
         <h1 color="white"> Records deleted </h1>
     {%endif%}
     </form>
-    <form method="POST" action="/createtweet"> 
-        Enter your screen name <input type ="text" name= "screen_name" />
+    <form method="POST" action="/createtweet">
         Enter your tweet <input type ="text" name= "tweet" />
         <button type="submit" class="btn btn-primary">Create Tweet</button>
     </form>
     </div>
+    {%if user %} 
+    <h1> {{user}}'s Timeline </h1>
+    {%endif%}
+    {%if error %}
+    <h1 > You must be logged in to be able to tweet </h1>
+    {%endif%}
     <table class="table table-dark">
     <thead class="thead-dark">
         <tr>
@@ -56,12 +62,10 @@
         <td>{{rec[2]}}</td> 
         <td>{{rec[4]}}</td>
         <td>{{rec[3]}}</td>
-    </tr>
     {%endfor%}
     </tbody>
     </table>
     <div class="container">
-            <h3>Bootstrap 4 Modal</h3>
             <!-- Modal --> 
             <div class="modal fade" id="Modal-vert-center-demo" tabindex="-1" role="dialog" aria-labelledby="Modal-vert-center-demo-label" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered" role="document">
