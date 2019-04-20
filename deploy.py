@@ -159,7 +159,7 @@ def timeline():
     data = cursor.fetchall() 
     cursor.close()
     db.close()
-    return render_template("login.html", records = data)
+    return render_template("timeline.html", records = data)
 
 @app.route('/search_database', methods=['GET', 'POST'])
 def search_database_for_tweets(): 
@@ -173,7 +173,7 @@ def search_database_for_tweets():
             data = cursor.fetchall() 
             cursor.close()
             db.close() 
-            return render_template("user_tweets.html", records = data)
+            return render_template("tweets.html", records = data)
         else:
             db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
             cursor = db.cursor()
