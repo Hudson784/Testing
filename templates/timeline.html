@@ -1,135 +1,111 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <title> Chirp Tracking App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <style> 
-    @import url(https://fonts.googleapis.com/css?family=Roboto:300);
-.login-page {
-  width: 360px;
-  padding: 8% 0 0;
-  margin: auto;
-}
-.form {
-  position: relative;
-  z-index: 1;
-  background: #FFFFFF;
-  max-width: 360px;
-  margin: 0 auto 100px;
-  padding: 45px;
-  text-align: center;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-}
-.form input {
-  font-family: "Roboto", sans-serif;
-  outline: 0;
-  background: #f2f2f2;
-  width: 100%;
-  border: 0;
-  margin: 0 0 15px;
-  padding: 15px;
-  box-sizing: border-box;
-  font-size: 14px;
-}
-.form button {
-  font-family: "Roboto", sans-serif;
-  text-transform: uppercase;
-  outline: 0;
-  background: #4CAF50;
-  width: 100%;
-  border: 0;
-  padding: 15px;
-  color: #FFFFFF;
-  font-size: 14px;
-  -webkit-transition: all 0.3 ease;
-  transition: all 0.3 ease;
-  cursor: pointer;
-}
-.form button:hover,.form button:active,.form button:focus {
-  background: #43A047;
-}
-.form .message {
-  margin: 15px 0 0;
-  color: #b3b3b3;
-  font-size: 12px;
-}
-.form .message a {
-  color: #4CAF50;
-  text-decoration: none;
-}
-.form .register-form {
-  display: none;
-}
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 300px;
-  margin: 0 auto;
-}
-.container:before, .container:after {
-  content: "";
-  display: block;
-  clear: both;
-}
-.container .info {
-  margin: 50px auto;
-  text-align: center;
-}
-.container .info h1 {
-  margin: 0 0 15px;
-  padding: 0;
-  font-size: 36px;
-  font-weight: 300;
-  color: #1a1a1a;
-}
-.container .info span {
-  color: #4d4d4d;
-  font-size: 12px;
-}
-.container .info span a {
-  color: #000000;
-  text-decoration: none;
-}
-.container .info span .fa {
-  color: #EF3B3A;
-}
-body {
-  background: #76b852; /* fallback for old browsers */
-  background: -webkit-linear-gradient(right, #76b852, #8DC26F);
-  background: -moz-linear-gradient(right, #76b852, #8DC26F);
-  background: -o-linear-gradient(right, #76b852, #8DC26F);
-  background: linear-gradient(to left, #76b852, #8DC26F);
-  font-family: "Roboto", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;      
-}
-</style> 
-</head>
-  <body> 
-    <div class="login-page">
-        <div class="form">
-          <form action= "/create_user" method ="POST" class="register-form">
-            <input type="text" placeholder="name" name= "create_username"/>
-            <input type="password" placeholder="password" name="create_password"/>
-            <input type="text" placeholder="email address" name ="create_email_address"/>
-            <button type="submit">create</button>
-            <p class="message">Already registered? <a href="#">Sign In</a></p>
-          </form>
-          <form action = "/verify_user" method ="POST" class="login-form">
-            <input type="text" placeholder="username" name="login_username"/>
-            <input type="password" placeholder="password" name = "login_password"/>
-            <button type = "submit">login</button>
-            <p class="message">Not registered? <a href="#">Create an account</a></p>
-          </form>
+{%extends "base.html"%}
+{%block content%}
+<body>
+{% if error  %}
+    <h1  color="white"> That word is not allowed </h1>
+    {%endif%} 
+    {%if criteria%}
+    <h1  color="white"> Searched results for {{criteria }} </h1>
+    {% endif %}
+    <div>
+    <form method="POST" action="/search_database"> 
+        <div class="form-group">
+            <label for="exampleInputEmail1">Filter your timeline</label>
+            <input type ="text" name= "criteria" /> <br>
+            <small id="emailHelp" class="form-text text-muted"> Filter your timeline by tweet</small>
         </div>
-      </div>
-    </body>
-    <script> 
-    $('.message a').click(function(){
-   $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-});
-    </script>
-  </html>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <form method="GET" action="/loadtimeline"> 
+        <label for="exampleInputEmail1">Refresh your timeline</label>
+        <button type="submit" class="btn btn-primary">Refresh</button>
+    </form>
+    <form method="POST" action="/deletetweets">
+        <label for="exampleInputEmail1">Delete(Clear) your timeline</label>
+        <button type="submit" class="btn btn-primary">Clear</button>
+    </form>
+    {%if status %}
+        <h1 color="white"> Records deleted </h1>
+    {%endif%}
+    </form>
+    <form method="POST" action="/createtweet"> 
+        Enter your screen name <input type ="text" name= "screen_name" />
+        Enter your tweet <input type ="text" name= "tweet" />
+        <button type="submit" class="btn btn-primary">Create Tweet</button>
+    </form>
+    </div>
+    <table class="table table-dark">
+    <thead class="thead-dark">
+        <tr>
+        <th> Modal</th>
+        <th> IMG </th>
+        <th> Screen Name </th>
+        <th> Tweeted </th>
+        <th> Created at </th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for rec in records %} 
+    <tr>
+        <td> 
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#Modal-vert-center-demo" data-name="{{rec[2]}}" data-id="{{rec[1]}}" data-tweet="{{rec[4]}}" data-created ="{{rec[3]}}" data-icon="{{rec[5]}}"   >
+        Edit
+        </button>
+        </td>
+        <td><img src="{{rec[5]}}" alt="PUSA-Icon"> </td>
+        <td>{{rec[2]}}</td> 
+        <td>{{rec[4]}}</td>
+        <td>{{rec[3]}}</td>
+    </tr>
+    {%endfor%}
+    </tbody>
+    </table>
+    <div class="container">
+            <h3>Bootstrap 4 Modal</h3>
+            <!-- Modal --> 
+            <div class="modal fade" id="Modal-vert-center-demo" tabindex="-1" role="dialog" aria-labelledby="Modal-vert-center-demo-label" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="Modal-vert-center-demo-label">Modal Tweet View</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                        <div id="userIcon"> </div> 
+                        <div id="tweetID"> </div>
+                        <div id="Screen_Name"> </div>
+                        <div id="tweet"></div>
+                        <div id="created_at"> </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success"> Edit </button>
+                    <button type="button" onclick="call()" class="btn btn-warning"> Delete </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <script>
+        $(document).ready(function() {
+            $('#Modal-vert-center-demo').on('show.bs.modal', function(event) {
+                console.log("show");
+                tweetId = $(event.relatedTarget).data("id");
+                name = $(event.relatedTarget).data("name");
+                tweet = $(event.relatedTarget).data("tweet");
+                created_at = $(event.relatedTarget).data("created");
+                icon = $(event.relatedTarget).data("icon");
+                $("#tweetID").html('Tweet ID: ' + tweetId);
+                $("#Screen_Name").html('Screen Name: ' + name);
+                $("#tweet").html('Tweeted: ' + tweet);
+                $("#created_at").html('Created At: ' + created_at);
+                $("#userIcon").html('<img src="' + icon + '" style="width: 64px; height: 64px">');
+            });
+            $('#Modal-vert-center-demo').on('shown.bs.modal', function () {
+                $('#Modal-vert-center-demo').focus();
+                console.log("shown");
+            });
+        });</script>
+{%endblock%}
