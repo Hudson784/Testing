@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
 </head>
 <body>
 {% if error  %}
@@ -16,16 +17,18 @@
     {% endif %}
     <form method="POST" action="/search_database"> 
         <div class="form-group">
-            <label for="exampleInputEmail1">Enter criteria </label>
+            <label for="exampleInputEmail1">Filter your timeline</label>
             <input type ="text" name= "criteria" /> <br>
-            <small id="emailHelp" class="form-text text-muted"> Help us filter tweets to your liking </small>
+            <small id="emailHelp" class="form-text text-muted"> Filter your timeline by tweet</small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <form method="GET" action="/loadtimeline"> 
+    <label for="exampleInputEmail1">Refresh your timeline</label>
     <button type="submit" class="btn btn-primary">Refresh</button>
     </form>
     <form method="POST" action="/deletetweets">
+        <label for="exampleInputEmail1">Delete(Clear) your timeline</label>
         <button type="submit" class="btn btn-primary">Clear</button>
     </form>
     {%if status %}
@@ -40,6 +43,7 @@
     <table class="table table-dark">
     <thead class="thead-dark">
         <tr>
+        <th> Modal</th>
         <th> IMG </th>
         <th> Screen Name </th>
         <th> Tweeted </th>
@@ -49,7 +53,11 @@
     <tbody>
     {%for rec in records %} 
     <tr>
-        <td class="text-center" data-toggle="modal" data-target="#modalAnime" data-id='{{ rec[0] }}' data-name='{{ rec[2] }}' data-genre='{{ rec[4] }}' data-type='{{ rec[3] }}' data-icon='{{rec[5]}}'><button type="submit" class="btn btn-info">View</button></td>
+        <td> 
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#Modal-vert-center-demo" data-name="{{rec[2]}}" data-id="{{rec[1]}}" data-tweet="{{rec[4]}}" data-created ="{{rec[3]}}" data-icon="{{rec[5]}}"   >
+        Edit
+        </button>
+        </td>
         <td><img src="{{rec[5]}}" alt="PUSA-Icon"> </td>
         <td>{{rec[2]}}</td> 
         <td>{{rec[4]}}</td>
@@ -58,49 +66,53 @@
     {%endfor%}
     </tbody>
     </table>
-      <!-- Modal -->
-      <div class="modal fade" id="modalAnime" tabindex="-1" role="dialog" aria-labelledby="modalAnimeLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAnimeLabel">Anime Details</h5>
+    <div class="container">
+            <h3>Bootstrap 4 Modal</h3>
+            <!-- Modal --> 
+            <div class="modal fade" id="Modal-vert-center-demo" tabindex="-1" role="dialog" aria-labelledby="Modal-vert-center-demo-label" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="Modal-vert-center-demo-label">Vertically centered modal</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                      <span aria-hidden="true">×</span>
                     </button>
+                  </div>
+                  <div class="modal-body">
+                        <div id="tweetID"> </div>
+                        <div id="Screen_Name"> </div>
+                        <div id="tweet"></div>
+                        <div id="created_at"> </div>
+                        <div id="userIcon"> </div> 
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success"> Edit </button>
+                    <button type="button" class="btn btn-warning"> Delete </button>
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <div id="animeId"></div>
-                    <div id="animeName"></div>
-                    <div id="animeGenre"></div>
-                    <div id="animeType"></div>
-                    <div id="#animeIcon"></div> 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+              </div>
             </div>
         </div>
-    </div>
-    <script>
+        <script>
         $(document).ready(function() {
-            $('#modalAnime').on('show.bs.modal', function(event) {
+            $('#Modal-vert-center-demo').on('show.bs.modal', function(event) {
                 console.log("show");
-                animeId = $(event.relatedTarget).data("id");
+                tweetId = $(event.relatedTarget).data("id");
                 name = $(event.relatedTarget).data("name");
-                genre = $(event.relatedTarget).data("genre");
-                type = $(event.relatedTarget).data("type");
+                tweet = $(event.relatedTarget).data("tweet");
+                created_at = $(event.relatedTarget).data("created");
                 icon = $(event.relatedTarget).data("icon");
-                $("#animeId").html('Anime ID: ' + animeId);
-                $("#animeName").html('Name: ' + name);
-                $("#animeGenre").html('Genre: ' + genre);
-                $("#animeType").html('Type: ' + type);
-                $("#animeIcon").html('<img src="' + icon + '" style="width: 64px; height: 64px">');
+                $("#tweetID").html('Tweet ID: ' + tweetId);
+                $("#Screen_Name").html('Screen Name: ' + name);
+                $("#tweet").html('Tweet: ' + tweet);
+                $("#created_at").html('Type: ' + created_at);
+                $("#userIcon").html('<img src="' + icon + '" style="width: 64px; height: 64px">');
             });
-            $('#modalAnime').on('shown.bs.modal', function () {
-                $('#modalAnime').focus();
+            $('#Modal-vert-center-demo').on('shown.bs.modal', function () {
+                $('#Modal-vert-center-demo').focus();
                 console.log("shown");
             });
-        });
-    </script>
+        });</script>
 </body>
 </html>
