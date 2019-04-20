@@ -3,7 +3,7 @@ import tweepy
 import json
 import MySQLdb 
 from dateutil import parser
-from flask import Flask, jsonify, request, render_template, redirect, url_for
+from flask import Flask, jsonify, request, render_template, redirect, url_for, session, g
 
 from userstream import streamUserRequest
 from streaming import stream
@@ -20,6 +20,7 @@ DATABASE = 'pPEd17bA5B'
 banned = ['sex', 'porn', 'pussy', 'vagina', 'bitch', 'sexy', 'slut']
 
 app = Flask(__name__)
+app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
 
 def authenticate(username, password):
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
@@ -44,15 +45,41 @@ def verify_user( ):
     if request.method == 'POST':
         username = request.form["login_username"]
         password = request.form["login_password"]
-        if authenticate(username, password): 
+        if authenticate(username, password):
+            session.pop('user', None) 
             db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
             cursor = db.cursor()
             query = "SELECT * FROM " + username
             cursor.execute(query)
             userdata = cursor.fetchall() 
-            return render_template("tracking_user_tweets.html", records = userdata) 
-    else:
-        return render_template("login.html")
+            session['user'] = username
+            return render_template("tracking_user_tweets.html", records = userdata, user = username) 
+        else:
+            return render_template("login.html")
+    return render_template("login.html")
+
+@app.route('/protected', methods=['GET', 'POST'])
+def protected():
+    if g.user:
+        return 'well we here'
+    return 'hard lucks bredda'
+
+@app.before_request
+def before_request(): 
+    g.user = None
+    if 'user' in session: 
+        g.user = session['user']
+
+def getsession(): 
+    if 'user' in session:
+        return session['user']
+    return None
+
+@app.route('/logout', methods=['GET', 'POST']) 
+def logout(): 
+    session.pop('user', None)
+    g.user = None
+    return render_template("login.html")
 
 #This app route creates a user or fetches the create user login page
 @app.route('/create_user', methods=['GET', 'POST'])
@@ -87,7 +114,7 @@ def track_tweets():
                 streamUserRequest(track_word_1, track_word_2)
                 return redirect(url_for('load_user_table')) 
     else:
-        return render_template('tracking_user_tweets.html')
+        return render_template('tracking_user_tweets.html', user = getsession())
 
 #This app route deletes the entire timeline's database 
 @app.route('/deletetimeline', methods=['POST'])
@@ -103,19 +130,23 @@ def delete_timeline():
 #This app route takes the tweet the user enterred and adds it to the timeline 
 #This route stores to both the user's database and the timeline database  
 @app.route("/createtweet", methods=['POST'])
-def create_tweet(): 
-    screen_name = request.form['screen_name']
-    tweet = request.form['tweet']
-    db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
-    cursor = db.cursor()
-    insert_query ="INSERT INTO twitter (screen_name, text) VALUES(%s, %s)"
-    cursor.execute(insert_query, (screen_name, tweet))
-    cursor.execute("select * from twitter order by id desc") 
-    data = cursor.fetchall() 
-    cursor.close()
-    db.commit()
-    db.close()
-    return render_template("timeline.html", records = data)
+def create_tweet():
+    error = 'You must be logged in to post'
+    if getsession() != None:
+        screen_name = session['user']
+        tweet = request.form['tweet']
+        db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
+        cursor = db.cursor()
+        insert_query ="INSERT INTO twitter (screen_name, text) VALUES(%s, %s)"
+        cursor.execute(insert_query, (screen_name, tweet))
+        cursor.execute("select * from twitter order by id desc") 
+        data = cursor.fetchall() 
+        cursor.close()
+        db.commit()
+        db.close()
+        error = None
+        return render_template("timeline.html", records = data, error = error)
+    return render_template("timeline.html", error = error)
 
 #This app route takes the information enterred by the user and then pulls from the twitter api 
 #Tracks the tweets specified by the user
@@ -138,7 +169,8 @@ def load_user_table():
     data = cursor.fetchall() 
     cursor.close()
     db.close()
-    return render_template("timeline.html", records = data)
+    user = g.user
+    return render_template("timeline.html", records = data, user = user)
 
 #This app route is responsible for loading more tweets to the timeline
 @app.route('/loadtimeline', methods=['GET'])
