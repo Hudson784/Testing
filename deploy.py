@@ -17,6 +17,7 @@ HOST = 'remotemysql.com'
 USER = 'pPEd17bA5B'
 PASSWD = 'qIhMyEEHjc'
 DATABASE = 'pPEd17bA5B'
+banned = ['sex', 'porn', 'pussy', 'vagina', 'bitch', 'sexy', 'slut']
 
 app = Flask(__name__)
 
@@ -49,7 +50,7 @@ def verify_user( ):
             query = "SELECT * FROM " + username
             cursor.execute(query)
             userdata = cursor.fetchall() 
-            return render_template("timeline.html", records = userdata) 
+            return render_template("tracking_user_tweets.html", records = userdata) 
     else:
         return render_template("login.html")
 
@@ -72,9 +73,21 @@ def create_user():
         cursor.close()
         db.commit()
         db.close()
-        return render_template("timeline.html", records = userdata)
+        return render_template("tracking_user_tweets.html", records = userdata)
     else:
         return render_template("login.html")
+
+@app.route('/tracktweets', methods=['GET','POST']) 
+def track_tweets():
+    if request.method == 'POST': 
+        track_word_1 = request.form["trending_1"]
+        track_word_2 = request.form["trending_2"]
+        if track_word_1 not in banned:
+            if track_word_2 not in banned:  
+                streamUserRequest(track_word_1, track_word_2)
+                return redirect(url_for('load_user_table')) 
+    else:
+        return render_template('tracking_user_tweets.html')
 
 #This app route deletes the entire timeline's database 
 @app.route('/deletetimeline', methods=['POST'])
@@ -110,7 +123,6 @@ def create_tweet():
 def search_tweets_for_user(): 
     if request.method == 'POST': 
         criteria = request.form['criteria']
-        banned = ['sex', 'porn', 'pussy', 'vagina', 'bitch', 'sexy', 'slut']
         if criteria not in banned:
             streamUserRequest(criteria, 'school')
             return redirect(url_for('load_user_table'))
@@ -135,6 +147,10 @@ def getTweets():
     return redirect(url_for('timeline'))
 
 @app.route('/', methods=['GET'])
+def redirect_login(): 
+    return redirect(url_for('login'))
+
+@app.route('/timeline', methods=['GET'])
 def timeline():
     stream()
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
@@ -143,7 +159,7 @@ def timeline():
     data = cursor.fetchall() 
     cursor.close()
     db.close()
-    return render_template("timeline.html", records = data)
+    return render_template("login.html", records = data)
 
 @app.route('/search_database', methods=['GET', 'POST'])
 def search_database_for_tweets(): 
