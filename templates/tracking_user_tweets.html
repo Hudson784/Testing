@@ -1,13 +1,50 @@
-<!DOCTYPE html>   
-<html>
+<!doctype html>
+<html lang="en">
     <head>
         <title> Chirp Tracking App</title>
-    </head>
-    <body> 
-    <form action= "/tracktweets" method ="POST" class="register-form">
-        <input type="text" placeholder="#trending1" name= "trending_1"/>
-        <input type="text" placeholder="#trending2" name="trending_2"/>
-        <button type="submit">create</button>
-    </form>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <style> 
+    html,
+body{
+ height: 100%;
+}
+</style>
+</head>
+<body> 
+<section id="cover">
+    <div id="cover-caption">
+        <div id="container" class="container">
+            {% if user %}
+            <h1> Welcome {{user}} </h1>
+            {%endif%}
+            <h1 class= "animated infinite bounce"> Let's look for trending tweets</h1>
+            <div class="row text-white">
+                <div class="col-sm-6 offset-sm-3 text-center">
+                    <h1>What tweets are you interested in tracking today? </h1>
+                    <div class="info-form">
+                        <form action="/tracktweets" method='POST' class="form-inlin justify-content-center">
+                            <div class="form-group">
+                                <label>Trending #11</label>
+                                <input type="text" class="form-control" placeholder="#trending1" name ="trending_1">
+                            </div>
+                            <div class="form-group">
+                                <h3 class="title">Trending 3</h3>
+                                <input type="text" class="form-control" placeholder="#trending2" name="trending_2">
+                            </div>
+                            <button type="submit" class="btn btn-success ">okay, go!</button>
+                        </form>
+                    </div>
+                    <br>
+                    <a href="/timeline" class="btn btn-outline-secondary btn-sm" role="button">
+                    Load timeline without filter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>   
