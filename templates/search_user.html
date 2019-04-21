@@ -1,0 +1,44 @@
+{%extends "base.html"%}
+{%block content%}
+{%if user %}
+<div>
+  {{user['screen_name']}}'s statistics <br> 
+  <table>
+    <thead> 
+      <th> Number of tweets </th> 
+      <th> Number of followers </th>
+      <th> Average tweets per day</th>
+    </thead>
+    <tbody>
+    <a href ="/timeline"> Back to the timeline</a> <br> 
+    <tr>
+      <td>  {{user['tweets_count']}}</td> 
+      <td> {{user['followers_count']}}</td>
+      <td>{{user['average_tweet_per_day']}} </td>
+    </tr>
+    </tbody>
+  </table>
+</div> 
+<div> 
+ <label> Last 20 tweets timeline:</label>
+ <form action="/search/{{user['screen_name']}}"> 
+ <label> Refresh </label>
+ <button type="submit"> </button>
+</form>
+  <table class="table table-dark">
+    <thead class="thead-dark"> 
+        <th> Tweet </th>
+        <th> Created at </th>
+    </thead>
+    <tbody>
+    {%for rec in timeline%}
+    <tr> 
+      <td> {{rec['text']}} </td>
+      <td> {{rec['created_at']}}</td> 
+    </tr> 
+    {%endfor%}
+    </tbody>
+    </table>
+    {%endif%}
+</div>
+{%endblock%}
