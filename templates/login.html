@@ -120,6 +120,9 @@ body {
           </form>
           <form action = "/verify_user" method ="POST" class="login-form">
             <input type="text" placeholder="username" name="login_username"/>
+            {%if error %}
+            username or email already exists, try logging in or changing username
+            {% endif %}
             <input type="password" placeholder="password" name = "login_password"/>
             <button type = "submit">login</button>
             <p class="message">Not registered? <a href="#">Create an account</a></p>
