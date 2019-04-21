@@ -3,10 +3,13 @@ import tweepy
 import json
 import MySQLdb 
 from dateutil import parser
-from flask import Flask, jsonify, request, render_template, redirect, url_for, session, g
+from flask import Flask, jsonify, request, render_template, redirect, url_for, session, g, flash
 
 from userstream import streamUserRequest
 from streaming import stream
+
+from trends import getTrends
+import twitter_tools as tt
 
 ACCESS_TOKEN = '1117652982475239424-TqGEsktbN74s0OGG6IqKKkXUArnSCi'
 ACCESS_TOKEN_SECRET  = 'Xtf4rLv3z0N6nHt7yJvYsYPOjZwEC45N3oqRhKo87XVdb'
@@ -21,6 +24,28 @@ banned = ['sex', 'porn', 'pussy', 'vagina', 'bitch', 'sexy', 'slut']
 
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
+
+#If the user calls the link directly
+@app.route('/search/<name>', methods =['GET', 'POST'])
+def get(name):
+    person = tt.twitter(name)
+    timeline = person['timeline']
+    user = person
+    return render_template("search_user.html", user = person, timeline = timeline)
+
+#If the link is called via a form 
+@app.route('/search/', methods =['POST'])
+def search_user(): 
+    if request.method == 'POST':
+        name = request.form["search_user_on_twitter"]
+        person = tt.twitter(name)
+        if not person:
+            return redirect(url_for('timeline'))
+        else:
+            timeline = person['timeline']
+            user = person
+            return render_template("search_user.html", user = person, timeline = timeline)
+    return redirect(url_for('timeline'))
 
 def authenticate(username, password):
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
@@ -49,20 +74,15 @@ def verify_user( ):
             session.pop('user', None) 
             db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
             cursor = db.cursor()
-            query = "SELECT * FROM " + username
-            cursor.execute(query)
+            query = "SELECT * FROM tweets WHERE screen_name = %s"
+            cursor.execute(query, ([username]))
             userdata = cursor.fetchall() 
             session['user'] = username
-            return render_template("tracking_user_tweets.html", records = userdata, user = username) 
+            Trends = getTrends("USA")
+            return render_template("tracking_user_tweets.html", records = userdata, user = username, trends = Trends) 
         else:
             return render_template("login.html")
     return render_template("login.html")
-
-@app.route('/protected', methods=['GET', 'POST'])
-def protected():
-    if g.user:
-        return 'well we here'
-    return 'hard lucks bredda'
 
 @app.before_request
 def before_request(): 
@@ -88,19 +108,28 @@ def create_user():
         username = request.form["create_username"]
         password = request.form["create_password"]
         email = request.form["create_email_address"]
+        session.pop('user', None)
         db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
         cursor = db.cursor()
-        query = "CREATE TABLE IF NOT EXISTS " + username + " (id int(11) NOT NULL AUTO_INCREMENT, name varchar(45), password varchar(45), tweet varchar(150), PRIMARY KEY (id));"
-        cursor.execute(query)
-        query = "INSERT INTO Users (username, password, email) VALUES (%s, %s, %s)"
-        cursor.execute(query,(username, password, email))
-        query = "SELECT * from " +username
-        cursor.execute(query)
-        userdata = cursor.fetchall()
-        cursor.close()
-        db.commit()
-        db.close()
-        return render_template("tracking_user_tweets.html", records = userdata)
+        query = "SELECT * FROM Users WHERE username = %s"
+        cursor.execute(query, ([username]))
+        data = cursor.fetchall()
+        print("Data recieved", data)
+        if data == None:
+            query = "INSERT INTO Users (username, password, email) VALUES (%s, %s, %s)"
+            cursor.execute(query,(username, password, email))
+            session['user'] = username
+            cursor.close()
+            db.commit()
+            db.close()
+            current_trends = getTrends("USA")
+            return render_template("tracking_user_tweets.html", user = username, trends = current_trends)
+        else:
+            flash("Account already exists")
+            cursor.close()
+            db.commit()
+            db.close()
+            return render_template("login.html", error = "Username already exists") 
     else:
         return render_template("login.html")
 
@@ -114,7 +143,9 @@ def track_tweets():
                 streamUserRequest(track_word_1, track_word_2)
                 return redirect(url_for('load_user_table')) 
     else:
-        return render_template('tracking_user_tweets.html', user = getsession())
+        word = "USA"
+        trends = getTrends(word)
+        return render_template('tracking_user_tweets.html', user = getsession(), trends = trends)
 
 #This app route deletes the entire timeline's database 
 @app.route('/deletetimeline', methods=['POST'])
@@ -139,6 +170,8 @@ def create_tweet():
         cursor = db.cursor()
         insert_query ="INSERT INTO twitter (screen_name, text) VALUES(%s, %s)"
         cursor.execute(insert_query, (screen_name, tweet))
+        insert_query = "INSERT INTO tweets (screen_name, text) VALUES(%s, %s)"
+        cursor.execute(insert_query, (screen_name, tweet))
         cursor.execute("select * from twitter order by id desc") 
         data = cursor.fetchall() 
         cursor.close()
@@ -156,16 +189,16 @@ def search_tweets_for_user():
         criteria = request.form['criteria']
         if criteria not in banned:
             streamUserRequest(criteria, 'school')
-            return redirect(url_for('load_user_table'))
+            return redirect(url_for('load_user_tweets'))
     else: 
           return redirect(url_for('timeline'))
 
 #This app route is responsible for loading the user tweets from the database
 @app.route('/loadusertweets', methods= ['GET', 'POST'])
-def load_user_table():
+def load_user_tweets():
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
     cursor = db.cursor()
-    cursor.execute("select * from tweets order by id desc") 
+    cursor.execute("select * from tweets order by id desc WHERE screen_name ="+g.user) 
     data = cursor.fetchall() 
     cursor.close()
     db.close()
@@ -192,6 +225,16 @@ def timeline():
     cursor.close()
     db.close()
     return render_template("timeline.html", records = data)
+
+@app.route('/load_user_table<user>', methods=['GET', 'POST'])
+def load_user_table(user):
+    db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM tweets WHERE screen_name ="+ user)
+    user_records = cursor.fetchall()  
+    cursor.close()
+    db.close() 
+    return render_template("tweets.html", records = user_records)
 
 @app.route('/search_database', methods=['GET', 'POST'])
 def search_database_for_tweets(): 
