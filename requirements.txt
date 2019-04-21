@@ -6,8 +6,9 @@ Click==7.0
 cryptography==2.3
 cycler==0.10.0
 Flask==1.0.2
-httplib2==0.11.3
+Flask-OAuth==0.12
 gunicorn==19.9.0
+httplib2==0.11.3
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
@@ -21,10 +22,12 @@ macaroonbakery==1.1.4
 Mako==1.0.7
 Markdown==2.6.9
 MarkupSafe==1.1.1
+matplotlib==2.2.2
 mysql-connector-python==8.0.11
 mysqlclient==1.3.10
 netifaces==0.10.4
 numpy==1.16.2
+oauth2==1.9.0.post1
 oauthlib==3.0.1
 olefile==0.46
 pandas==0.24.2
