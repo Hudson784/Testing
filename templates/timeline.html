@@ -8,13 +8,13 @@
     <h1  color="white"> Searched results for {{criteria }} </h1>
     {% endif %}
     <div>
-    <form method="POST" action="/search_database"> 
-            <label for="exampleInputEmail1">Filter your timeline</label>
-            <input type ="text" name= "criteria" /> <br>
-            <small id="emailHelp" class="form-text text-muted"> Filter your timeline by tweet</small>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </form>
+      <form method="POST" action="/search_database"> 
+        <label for="exampleInputEmail1">Filter your timeline</label>
+        <input type ="text" name= "criteria" /> <br>
+        <small id="emailHelp" class="form-text text-muted"> Filter your timeline by tweet</small>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
     <form method="GET" action="/loadtimeline"> 
         <div class="form-group">
           <label for="exampleInputEmail1">Refresh your timeline</label>
@@ -24,6 +24,12 @@
     <form method="POST" action="/deletetimeline">
         <label for="exampleInputEmail1">Delete(Clear) your timeline</label>
         <button type="submit" class="btn btn-primary">Clear</button>
+    </form>
+    <form method="POST" action="/search/"> 
+      <label for="searchOnTwitter">Search for Twitter user </label>
+      <input type ="text" name= "search_user_on_twitter" placeholder="screen_name"/> <br>
+      <small id="emailHelp" class="form-text text-muted"> Do not include the @ when enterring @name</small>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     {%if status %}
         <h1 color="white"> Records deleted </h1>
@@ -46,6 +52,7 @@
         <th> Modal</th>
         <th> IMG </th>
         <th> Screen Name </th>
+        <th> Search </th>
         <th> Tweeted </th>
         <th> Created at </th>
         </tr>
@@ -60,6 +67,7 @@
         </td>
         <td><img src="{{rec[5]}}" alt="PUSA-Icon"> </td>
         <td>{{rec[2]}}</td> 
+        <td> <button type="button" class="btn btn-info" onclick="window.location.href='/search/{{rec[2]}}'" > Search User</button>   </td> 
         <td>{{rec[4]}}</td>
         <td>{{rec[3]}}</td>
     {%endfor%}
