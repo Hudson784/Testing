@@ -9,12 +9,27 @@
     {% endif %}
     <div>
       <form method="POST" action="/search_database"> 
-        <label for="exampleInputEmail1">Filter your timeline</label>
+        <label for="exampleInputEmail1"> Search your timeline for previous tweets by text </label>
         <input type ="text" name= "criteria" /> <br>
-        <small id="emailHelp" class="form-text text-muted"> Filter your timeline by tweet</small>
+        <small id="emailHelp" class="form-text text-muted"> This searches through your current timeline</small>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     </div>
+    <div>
+      <form method="POST" action="/search_database_for_user"> 
+        <label for="exampleInputEmail1"> Search your timeline for previous tweets by user @ name </label>
+        <input type ="text" name= "search_user_in_database" /> <br>
+        <small id="emailHelp" class="form-text text-muted"> This searches through your current timeline</small>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div> 
+    <form method="POST" action="/track_tweet"> 
+      <div class="form-group">
+        <label for="exampleInputEmail1">Track trending word </label>
+        <input type ="text" name= "track_tweet"/> <br>
+        <button type="submit" class="btn btn-primary">Track</button>
+      </div>
+  </form>
     <form method="GET" action="/loadtimeline"> 
         <div class="form-group">
           <label for="exampleInputEmail1">Refresh your timeline</label>
@@ -42,9 +57,11 @@
     </div>
     {%if user %} 
     <h1> {{user}}'s Timeline </h1>
+    <a href="/load_user_timeline"> Click here to go to your personalized timeline </a> 
     {%endif%}
     {%if error %}
     <h1 > You must be logged in to be able to tweet </h1>
+    <a href ="/login" > Click to return to the login page to login</a>
     {%endif%}
     <table class="table table-dark">
     <thead class="thead-dark">
@@ -55,6 +72,7 @@
         <th> Search </th>
         <th> Tweeted </th>
         <th> Created at </th>
+        <th> Delete </th>
         </tr>
     </thead>
     <tbody>
@@ -65,14 +83,27 @@
         Edit
         </button>
         </td>
-        <td><img src="{{rec[5]}}" alt="PUSA-Icon"> </td>
+        <td><img src="{{rec[5]}}" alt="Profile Photo"> </td>
         <td>{{rec[2]}}</td> 
         <td> <button type="button" class="btn btn-info" onclick="window.location.href='/search/{{rec[2]}}'" > Search User</button>   </td> 
         <td>{{rec[4]}}</td>
         <td>{{rec[3]}}</td>
+        {%if user|string() == rec[2]|string() %}
+        <td> <button type="button" onclick="window.location.href ='/delete_tweet{{rec[1]}}'" class="btn btn-warning"> Delete </button> </td>
+        {%endif%}
     {%endfor%}
     </tbody>
     </table>
+    {% if display %}
+    
+            <div class="text-center" style="padding-bottom: 1%">
+
+                <button type="button" onclick="pagedown()" class="text-center" style="display:inline">&laquo; Previous</button>
+
+                <button type="button" onclick="pageup()" class="text-center" style="display:inline">&raquo; Next</button>
+         </div>
+
+ {% endif %}
     <div class="container">
             <!-- Modal --> 
             <div class="modal fade" id="Modal-vert-center-demo" tabindex="-1" role="dialog" aria-labelledby="Modal-vert-center-demo-label" aria-hidden="true">
@@ -93,8 +124,7 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success"> Edit </button>
-                    <button type="button" onclick="call()" class="btn btn-warning"> Delete </button>
+                    <button type="button" onclick ="myFunction()" class="btn btn-success"> DELETE </button>
                   </div>
                 </div>
               </div>
@@ -119,5 +149,38 @@
                 $('#Modal-vert-center-demo').focus();
                 console.log("shown");
             });
-        });</script>
+        });
+        
+function pageup () 
+
+{
+
+    let pagenumber = (window.location.href.split("&")[1])
+
+    pagenumber++;
+
+    window.location.href="/timeline&"+pagenumber;
+
+}
+
+function pagedown ()
+
+{
+
+    let pagenumber = (window.location.href.split("&")[1])
+
+    pagenumber--;
+
+    window.location.href="/timeline&"+pagenumber;
+
+}
+
+function myFunction() {
+ //var person = prompt("Are you sure you want to delete this?", "No");
+  //if (person != null || person != "No") {
+    let temp = document.getElementById("tweetID").value
+    window.location.href="/delete_tweet"+temp
+  //gi}
+}
+</script>
 {%endblock%}
