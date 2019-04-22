@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1> Searched Tweet Results: </h1>
+{%for rec in records %}
+<form action ='/update_tweet_from_form'  method ="POST">
+  <div class="form-group">
+    <label for="tweetID"> Tweet ID </label>
+    <input type="type" class="form-control" name="edit_ID" value = "{{rec[0]}}"readonly>
+    <label for="Screen_name"> Screen_name </label>
+    <input type="type" class="form-control" name="edit_screen_name" value = "{{rec[2]}}" readonly>
+    <label for="Created_at"> Created_at </label>
+    <input type="type" class="form-control" name="edit_created_at" value ="{{rec[3]}}" readonly>
+    <label for="tweet"> Text </label>
+    <input type="type" class="form-control" name="edit_tweet" value = "{{rec[4]}}">
+    <label for="profile_img"> IMG </label>
+    <input type="type" class="form-control" name="edit_profile_img" value = "{{rec[5]}}" readonly>
+    <button type="submit" class="btn btn-secondary">UPDATE TWEET</button>
+  </div>
+</form>
+{%endfor%}
+{% endblock %}
