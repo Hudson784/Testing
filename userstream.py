@@ -18,6 +18,8 @@ DATABASE = 'pPEd17bA5B'
 def store_data_user(created_at, text, screen_name, tweet_id, img):
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
     cursor = db.cursor()
+    insert_query = "INSERT INTO twitter (tweet_id, screen_name, created_at, text, img) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(insert_query, (tweet_id, screen_name, created_at, text, img))
     insert_query = "INSERT INTO tweets (tweet_id, screen_name, created_at, text, img) VALUES (%s, %s, %s, %s, %s)"
     cursor.execute(insert_query, (tweet_id, screen_name, created_at, text, img))
     db.commit()
@@ -60,9 +62,16 @@ class StreamUserListener(tweepy.StreamListener):
             return False 
 
 def streamUserRequest(word1, word2):
-    word1 = "#" + word1
-    word2 = "#" + word2
     user_words = [word1, word2]
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    listener = StreamUserListener(api=tweepy.API(wait_on_rate_limit=True)) 
+    streamer = tweepy.Stream(auth=auth, listener=listener)
+    print("Tracking: " + str(user_words))
+    streamer.filter(track=user_words)
+
+def trackTweet(word):
+    user_words = [word] 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     listener = StreamUserListener(api=tweepy.API(wait_on_rate_limit=True)) 
