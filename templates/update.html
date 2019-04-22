@@ -1,0 +1,10 @@
+{%extends "base.html"%}
+{%block content%}
+{%if error %}
+<h2>  {{error}} </h2>
+{% endif %}
+<h1> Enter the ID of the record you wish to update </h1>
+<form action='/get_tweet_details' method ="POST"> 
+    <input type="number" name="get_tweet_id"> <br> 
+</form>
+{%endblock%}
