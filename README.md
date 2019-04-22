@@ -15,13 +15,13 @@ This 'Lite' service, also keeps date usage in consideration as data pulling, pus
 1. Download repository files
 2. Create a python environment
 3. Download needed modules and libraries:
-'''
+```
 pip install -r requirements.txt
-'''
+```
 4. Run:
-'''
+```
 heruko instructions or something here&gt;
-'''
+```
 
 # Live Site
 Our site is up and ready
