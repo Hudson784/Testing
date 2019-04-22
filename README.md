@@ -26,8 +26,8 @@ Our site is up and ready
 [TwitLite](https://stark-savannah-30879.herokuapp.com/login)
 
 # Team members
-Hudson
-K'mani
-Chantel
-Antonio
-Maya
+- Hudson
+- K'mani
+- Chantel
+- Antonio
+- Maya
