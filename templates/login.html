@@ -111,11 +111,12 @@ body {
   <body> 
     <div class="login-page">
         <div class="form">
-          <form action= "/create_user" method ="POST" class="register-form">
+          <form name = "register_user" onsubmit="return validateform()" method ="POST" class="register-form">
             <input type="text" placeholder="name" name= "create_username"/>
             <input type="password" placeholder="password" name="create_password"/>
+            <input type="password" placeholder="re-enter password" name="create_password_verify">
             <input type="text" placeholder="email address" name ="create_email_address"/>
-            <button type="submit">create</button>
+            <button type="submit"> create</button>
             <p class="message">Already registered? <a href="#">Sign In</a></p>
           </form>
           <form action = "/verify_user" method ="POST" class="login-form">
@@ -127,12 +128,47 @@ body {
             <button type = "submit">login</button>
             <p class="message">Not registered? <a href="#">Create an account</a></p>
           </form>
+          <a class="btn btn-block btn-social btn-twitter" href="{{ url_for('auth') }}">
+          <span class="fa fa-twitter"></span> Sign in with Twitter
+          </a>
+          <a class="btn btn-social-icon btn-twitter">
+              <span class="fa fa-twitter"></span>
+            </a>
         </div>
       </div>
     </body>
     <script> 
     $('.message a').click(function(){
    $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-});
-    </script>
-  </html>
+});     
+function validateform(){     
+       var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+       let name = document.register_user.create_username.value; 
+       let first_password =  document.register_user.create_password.value;
+       let second_password =  document.register_user.create_password_verify.value; 
+       let email = document.register_user.create_email_address.value; 
+        
+        if (name == null || name == "") {
+            alert ("User name cannot be blank"); 
+        }
+       else if (first_password == null || second_password == null) {
+            alert ("password fields cannot be blank"); 
+       }
+       else if (first_password != second_password){ 
+           alert("passwords have to match"); 
+       }
+       else if (first_password.length < 8) {
+           alert("password must be at least 8 characters long")
+       }
+       else if (second_password.length < 8 ){
+           alert("password must be at least 8 characters long")
+       }
+       else if (!email.value.match(mailformat)){
+          alert("Email format is incorrect")
+       }
+       else {
+           window.location.href = "/create_user"
+       }
+};
+      </script> 
+</html>
