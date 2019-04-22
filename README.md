@@ -13,13 +13,13 @@ Twitter is a global platform that allows publicity to be controlled by the user.
 1. Download repository files
 2. Create a python environment
 3. Download needed modules and libraries:
-'''
+```
 pip install -r requirements.txt
-'''
+```
 4. Run:
-'''
+```
 <enter heruko instructions or something here>
-'''
+```
 
 # Live Site
 Our site is up and ready
