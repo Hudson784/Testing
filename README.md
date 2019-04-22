@@ -20,7 +20,7 @@ pip install -r requirements.txt
 ```
 4. Run:
 ```
-heruko instructions or something here&gt;
+Run the application from the CLI. More information provided in the information.txt
 ```
 
 # Live Site
