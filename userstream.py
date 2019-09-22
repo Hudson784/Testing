@@ -5,16 +5,6 @@ import MySQLdb
 from dateutil import parser
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-ACCESS_TOKEN = '1117652982475239424-TqGEsktbN74s0OGG6IqKKkXUArnSCi'
-ACCESS_TOKEN_SECRET  = 'Xtf4rLv3z0N6nHt7yJvYsYPOjZwEC45N3oqRhKo87XVdb'
-CONSUMER_KEY = 'uWrEWX2bhsMtN8hnpd12HjMfl'
-CONSUMER_SECRET = 'bdcvgAI6xRTYvoHJeNf1nkDsl9oDylOkJr1gqkwXEasY3qK1EF'
-
-HOST = 'remotemysql.com'
-USER = 'pPEd17bA5B'
-PASSWD = 'qIhMyEEHjc'
-DATABASE = 'pPEd17bA5B'
-
 def store_data_user(created_at, text, screen_name, tweet_id, img):
     db=MySQLdb.connect(host=HOST, user=USER, passwd=PASSWD, db=DATABASE, charset="utf8")
     cursor = db.cursor()
